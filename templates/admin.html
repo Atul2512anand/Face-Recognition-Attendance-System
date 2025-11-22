@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Face Database</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+        }
+        
+        h2 {
+            color: #f5576c;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #f5576c;
+        }
+        
+        .file-upload {
+            border: 2px dashed #e0e0e0;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .file-upload:hover {
+            border-color: #f5576c;
+            background: #fff5f7;
+        }
+        
+        .file-upload input {
+            display: none;
+        }
+        
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        .btn-primary {
+            background: #f5576c;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #e04556;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.4);
+        }
+        
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #059669;
+        }
+        
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+            padding: 8px 16px;
+            font-size: 14px;
+            width: auto;
+        }
+        
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+        
+        #message {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 500;
+            text-align: center;
+            display: none;
+        }
+        
+        .success { background: #d1fae5; color: #065f46; }
+        .error { background: #fee2e2; color: #991b1b; }
+        
+        .users-list {
+            margin-top: 20px;
+        }
+        
+        .user-item {
+            padding: 15px;
+            background: #f9fafb;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .instructions {
+            background: #fef3c7;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .instructions h3 {
+            color: #92400e;
+            margin-bottom: 10px;
+        }
+        
+        .instructions ul {
+            margin-left: 20px;
+            color: #78350f;
+            line-height: 1.8;
+        }
+        
+        .nav-link {
+            display: inline-block;
+            background: white;
+            color: #f5576c;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .nav-link:hover {
+            background: #fff5f7;
+        }
+        
+        .loading {
+            text-align: center;
+            color: #666;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>👤 Face Database Admin Panel</h1>
+        
+        <a href="http://57.158.24.17" class="nav-link">← Back to Attendance System</a>
+        
+        <div class="card">
+            <h2>➕ Add New Person</h2>
+            
+            <div class="instructions">
+                <h3>📋 Instructions:</h3>
+                <ul>
+                    <li><strong>Upload 15-20 images per person</strong> for better accuracy</li>
+                    <li>Use <strong>different angles, lighting, and expressions</strong></li>
+                    <li>Images should show <strong>clear face</strong> (no sunglasses, masks)</li>
+                    <li>After uploading, click <strong>"Train Model"</strong> to update recognition</li>
+                    <li>Training takes 10-30 seconds depending on database size</li>
+                </ul>
+            </div>
+            
+            <form id="uploadForm" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label>👤 Person Name:</label>
+                    <input type="text" id="name" name="name" placeholder="e.g., John Doe" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>🔢 User ID (Unique Number):</label>
+                    <input type="number" id="user_id" name="user_id" placeholder="e.g., 3" min="1" required>
+                    <small style="color: #666; margin-top: 5px; display: block;">Use a unique number for each person</small>
+                </div>
+                
+                <div class="form-group">
+                    <label>📸 Upload Face Images:</label>
+                    <div class="file-upload" onclick="document.getElementById('fileInput').click()">
+                        <p style="font-size: 18px;">📁 Click to select multiple images</p>
+                        <p style="font-size: 14px; color: #666; margin-top: 10px;">Supports JPG, PNG (Max 20MB total)</p>
+                        <input type="file" id="fileInput" name="images" multiple accept="image/*" required>
+                    </div>
+                    <p id="fileCount" style="margin-top: 10px; color: #666; font-weight: 600;"></p>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">📤 Upload Images</button>
+            </form>
+            
+            <div id="message"></div>
+        </div>
+        
+        <div class="card">
+            <h2>🎓 Train Recognition Model</h2>
+            <p style="margin-bottom: 15px; color: #666;">After uploading images, train the model to update face recognition.</p>
+            <button class="btn btn-success" onclick="trainModel()">🚀 Train Model with New Data</button>
+            <div id="trainMessage" style="margin-top: 15px;"></div>
+        </div>
+        
+        <div class="card">
+            <h2>📊 Current Users in Database</h2>
+            <div class="users-list" id="usersList">
+                <div class="loading">Loading users...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const fileCount = document.getElementById('fileCount');
+        const uploadForm = document.getElementById('uploadForm');
+        const message = document.getElementById('message');
+        
+        fileInput.addEventListener('change', () => {
+            const count = fileInput.files.length;
+            if (count > 0) {
+                fileCount.textContent = `✅ ${count} image(s) selected`;
+                fileCount.style.color = '#10b981';
+            } else {
+                fileCount.textContent = '';
+            }
+        });
+        
+        uploadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            showMessage('⏳ Uploading images...', 'success');
+            
+            const formData = new FormData();
+            formData.append('name', document.getElementById('name').value);
+            formData.append('user_id', document.getElementById('user_id').value);
+            
+            for (let file of fileInput.files) {
+                formData.append('images', file);
+            }
+            
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage(`✅ ${data.message}. Don't forget to train the model!`, 'success');
+                    uploadForm.reset();
+                    fileCount.textContent = '';
+                    loadUsers();
+                } else {
+                    showMessage('❌ ' + (data.error || 'Upload failed'), 'error');
+                }
+            } catch (err) {
+                showMessage('❌ Error: ' + err.message, 'error');
+            }
+        });
+        
+        async function trainModel() {
+            const trainMessage = document.getElementById('trainMessage');
+            trainMessage.innerHTML = '<p style="color: #666; padding: 12px; background: #f3f4f6; border-radius: 8px;">⏳ Training in progress... This may take 10-30 seconds. Please wait.</p>';
+            
+            try {
+                const response = await fetch('/train', {
+                    method: 'POST'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    trainMessage.innerHTML = `<p class="success" style="padding: 12px; border-radius: 8px;">✅ ${data.message}</p>`;
+                } else {
+                    trainMessage.innerHTML = `<p class="error" style="padding: 12px; border-radius: 8px;">❌ ${data.error || 'Training failed'}</p>`;
+                }
+            } catch (err) {
+                trainMessage.innerHTML = `<p class="error" style="padding: 12px; border-radius: 8px;">❌ Error: ${err.message}</p>`;
+            }
+        }
+        
+        async function loadUsers() {
+            try {
+                const response = await fetch('/users');
+                const data = await response.json();
+                
+                const usersList = document.getElementById('usersList');
+                if (Object.keys(data.users).length === 0) {
+                    usersList.innerHTML = '<p style="color: #666; text-align: center; padding: 20px;">No users in database yet. Upload some images to get started!</p>';
+                } else {
+                    usersList.innerHTML = Object.entries(data.users)
+                        .sort((a, b) => parseInt(a[0]) - parseInt(b[0]))
+                        .map(([id, info]) => `
+                            <div class="user-item">
+                                <div>
+                                    <strong style="font-size: 16px;">👤 User ID: ${id}</strong>
+                                    <br>
+                                    <span style="color: #666; font-size: 14px;">📸 ${info.count} image(s)</span>
+                                </div>
+                                <button class="btn btn-danger" onclick="deleteUser('${id}')">🗑️ Delete</button>
+                            </div>
+                        `).join('');
+                }
+            } catch (err) {
+                console.error('Error loading users:', err);
+                document.getElementById('usersList').innerHTML = '<p class="error" style="padding: 12px;">Error loading users</p>';
+            }
+        }
+        
+        async function deleteUser(userId) {
+            if (!confirm(`Are you sure you want to delete all images for User ID ${userId}?`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/delete-user/${userId}`, {
+                    method: 'DELETE'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert(data.message);
+                    loadUsers();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (err) {
+                alert('Error: ' + err.message);
+            }
+        }
+        
+        function showMessage(msg, type) {
+            message.textContent = msg;
+            message.className = type;
+            message.style.display = 'block';
+            setTimeout(() => {
+                if (!msg.includes('Uploading')) {
+                    message.style.display = 'none';
+                }
+            }, 5000);
+        }
+        
+        // Load users on page load
+        loadUsers();
+    </script>
+</body>
+</html>
